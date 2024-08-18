@@ -8,7 +8,7 @@ import os
 fake = Faker()
 
 class UserBehavior(TaskSet):
-    @task
+    @task(1)
     def my_task(self):
         email = str(fake.name())+str(fake.city())+str(fake.random_int())
         email_without_space = ''.join(email.split())
@@ -23,12 +23,13 @@ class UserBehavior(TaskSet):
         except Exception as e:
             print(f"Request failed: {e}")
     
-    @task
+    @task(6)
     def update_profile_loadtest(self):
-        random_id = 2
+        random_id = randint(1,680000)
         payload = {
             'id': random_id
         }
+        print(random_id)
         headers = {'content-type': 'application/json'}
         try:
             x = requests.post("http://192.168.1.79/load_test/p_update/", data=json.dumps(payload), headers=headers)
@@ -60,6 +61,7 @@ class UserBehavior(TaskSet):
         except Exception as e:
             print(f"Request failed: {e}")
         
+
 
 
 class WebsiteUser(FastHttpUser):
