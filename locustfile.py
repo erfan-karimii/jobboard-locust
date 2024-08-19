@@ -18,7 +18,7 @@ def login_user():
     print(random_id)
     headers = {'content-type': 'application/json'}
     try:
-        x = requests.post("http://127.0.0.1:8000/load_test/p_update/", data=json.dumps(payload), headers=headers)
+        x = requests.post("http://192.168.1.79/load_test/p_update/", data=json.dumps(payload), headers=headers)
         access = x.json().get("access")
         if "notfound"  == access:
             print("user not found")
