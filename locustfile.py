@@ -32,9 +32,9 @@ def login_user():
 
 
 
-
-
 class UserBehavior(TaskSet):
+    host = '192.168.1.79'
+    
     @task(1)
     def my_task(self):
         email = str(fake.name())+str(fake.city())+str(fake.random_int())
@@ -45,7 +45,7 @@ class UserBehavior(TaskSet):
         print(payload,'////////////////////////')
         headers = {'content-type': 'application/json'}
         try:
-            response = self.client.post("/login/", data=json.dumps(payload), headers=headers)
+            response = self.client.post("account/user/login/", data=json.dumps(payload), headers=headers)
             response.raise_for_status()  # Raises an error for 4xx/5xx status codes
         except Exception as e:
             print(f"Request failed: {e}")
@@ -67,7 +67,7 @@ class UserBehavior(TaskSet):
                 'resume_file': (os.path.basename(file_path), image_file, 'image/jpeg')
             }
         
-            response = self.client.patch("/profile/", data=data,files=files, headers=headers)
+            response = self.client.patch("account/user/profile/", data=data,files=files, headers=headers)
             print(response.text)
             response.raise_for_status()
 
@@ -80,7 +80,7 @@ class UserBehavior(TaskSet):
         """
         
         headers = login_user()
-        x=self.client.get('/profile/', headers=headers)
+        x=self.client.get('account/user/profile/', headers=headers)
 
         
 
