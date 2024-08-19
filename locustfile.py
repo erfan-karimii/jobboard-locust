@@ -67,7 +67,7 @@ class UserBehavior(TaskSet):
                 'resume_file': (os.path.basename(file_path), image_file, 'image/jpeg')
             }
         
-            response = self.client.post("/profile/", data=data,files=files, headers=headers)
+            response = self.client.patch("/profile/", data=data,files=files, headers=headers)
             print(response.text)
             response.raise_for_status()
 
