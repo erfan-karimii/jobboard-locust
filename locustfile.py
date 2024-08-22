@@ -8,7 +8,7 @@ from decouple import config
 
 fake = Faker()
 HOST = config("HOST", default="http://192.168.1.79")
-MAX_USER_ID = config("MAX_USER_ID", default=650000,cast=int)
+MAX_USER_ID = config("MAX_USER_ID", default=1230864,cast=int)
 
 def login_random_user():
     """
