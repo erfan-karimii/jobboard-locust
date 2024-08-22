@@ -1,3 +1,4 @@
 requests
 Faker
 locust
+python-decouple
