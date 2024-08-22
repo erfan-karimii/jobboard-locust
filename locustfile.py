@@ -7,22 +7,23 @@ from faker import Faker
 from decouple import config
 
 fake = Faker()
-HOST = config("HOST", default="http://192.168.1.79"),
+HOST = config("HOST", default="http://192.168.1.79")
+MAX_USER_ID = config("MAX_USER_ID", default=650000,cast=int)
 
 def login_random_user():
     """
     this function send POST for login end point , recive jwt (access Token) and return proper header foor authenticatin
     """
-    random_id = randint(1, 650000)
+    random_id = randint(1, MAX_USER_ID)
     payload = {"id": random_id}
     headers = {"content-type": "application/json"}
     try:
-        x = requests.post(
-            "http://192.168.1.79/load_test/p_update/",
+        response = requests.post(
+            f"{HOST}/load_test/p_update/",
             data=json.dumps(payload),
             headers=headers,
         )
-        access = x.json().get("access")
+        access = response.json().get("access")
         if "notfound" == access:
             print("user not found")
         else:
@@ -50,7 +51,7 @@ class UserBehavior(TaskSet):
             response = self.client.post(
                 "/account/user/login/", data=json.dumps(payload), headers=headers
             )
-            print(response.txt)
+            print(response.text)
             response.raise_for_status()  # Raises an error for 4xx/5xx status codes
         except Exception as e:
             print(f"Request failed: {e}")
@@ -97,7 +98,7 @@ class UserBehavior(TaskSet):
 
         headers = login_random_user()
         response  = self.client.get("/account/user/profile/", headers=headers)
-        print(response.txt)
+        print(response.text)
 
 
 class WebsiteUser(FastHttpUser):
