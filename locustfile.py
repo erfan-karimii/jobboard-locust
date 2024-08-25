@@ -5,9 +5,39 @@ from locust import TaskSet, task, FastHttpUser, constant
 import requests
 from faker import Faker
 from decouple import config
+import pandas as pd
+from statistics import mean
+
 
 fake = Faker()
 HOST = config("HOST", default="http://192.168.1.79")
+
+
+
+csv_file = pd.read_csv('modified_file2.csv')
+PROVINCE_CHOICES = ["AL","AR","AE","AW","BU","CM","FA","GI","GO","HA","HO","IL","IS","KE","KM","KN","KR","KS","KH","KB","KU","LO","MA","MZ","QA","QO","SE","SB","TH","YZ","ZN",]
+
+def login_company():
+    """
+    this function send POST for login end point and recive jwt (access Token) 
+    """
+    headers = {'content-type': 'application/json'}
+    try:
+        x = requests.post(f"{HOST}/load_test/company_profile/", headers=headers)
+        access = x.json().get("access")
+        if "notfound"  == access:
+            print("user not found")
+        else:
+            headers = {'content-type': 'application/json','Authorization':f'Bearer {access}'}
+            
+            return headers
+ 
+    except Exception as e:
+        print(f"Request failed: {e}")
+
+
+
+
 MAX_USER_ID = config("MAX_USER_ID", default=1230864,cast=int)
 
 def login_random_user():
@@ -98,10 +128,41 @@ class UserBehavior(TaskSet):
 
         headers = login_random_user()
         response  = self.client.get("/account/user/profile/", headers=headers)
+
+
+    @task
+    def save_jobs(self):
+        with open('index.txt', 'r+') as file:
+            number = int(file.read().strip()) + 2
+            file.seek(0)
+            file.write(str(number))
+            file.truncate()
+        header = login_company()
+        salary = csv_file.iloc[number]['Salary Range'].split("-")
+        min_salary = int(salary[0][1:-1])
+        max_salary = int(salary[1][1:-1])
+        avg = mean([min_salary,max_salary])
+        
+        info = csv_file.iloc[number]['Job Description'] + "\n" + csv_file.iloc[number]['skills'] + "\n" + csv_file.iloc[number]['Responsibilities']
+        category = randint(1,20)  
+        print(int(avg))
+        data = {
+            "title":csv_file.iloc[number]['Job Title'],
+            "category":category,
+            "province":choice(PROVINCE_CHOICES),
+            "salary": int(avg),
+            "info":info,
+            "status":True
+
+        }
+        response=self.client.post('/jobs/company/job/',headers=header,data=json.dumps(data),format='json')
         print(response.text)
 
-
 class WebsiteUser(FastHttpUser):
+<<<<<<< HEAD
     host = HOST
+=======
+    host= HOST
+>>>>>>> d2aad7ec3a49e08bd184a1ea7a6732b7aedcb985
     tasks = [UserBehavior]
     wait_time = constant(0.4)
