@@ -159,10 +159,6 @@ class UserBehavior(TaskSet):
         print(response.text)
 
 class WebsiteUser(FastHttpUser):
-<<<<<<< HEAD
     host = HOST
-=======
-    host= HOST
->>>>>>> d2aad7ec3a49e08bd184a1ea7a6732b7aedcb985
     tasks = [UserBehavior]
     wait_time = constant(0.4)
