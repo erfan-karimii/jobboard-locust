@@ -38,7 +38,7 @@ def login_company():
 
 
 
-MAX_USER_ID = config("MAX_USER_ID", default=1230864,cast=int)
+MAX_USER_ID = config("MAX_USER_ID", default=1500000,cast=int)
 
 def login_random_user():
     """
@@ -157,6 +157,20 @@ class UserBehavior(TaskSet):
         }
         response=self.client.post('/jobs/company/job/',headers=header,data=json.dumps(data),format='json')
         print(response.text)
+
+
+    @task(5)
+    def send_resume(self):
+        header=login_random_user()
+        header['content-type'] = "multipart/form-data"
+        cv_file = './images/Untitled.jpg'
+        data = {
+            'job':randint(1,230000)
+        }
+        with open(cv_file, "rb") as image_file:
+            res = self.client.post('/jobs/user/send_job/',headers=header,data = data,
+            files={"cv_file":( os.path.basename(cv_file), image_file, "image/jpeg")})
+            print(res.content)
 
 class WebsiteUser(FastHttpUser):
     host= HOST
